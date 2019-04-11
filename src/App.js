@@ -2,19 +2,18 @@ import React, { Component } from 'react';
 import * as d3 from 'd3-fetch';
 
 import FiltersPanel from './FiltersPanel';
-import FiltersMenuData from './FiltersMenuData';
+import FiltersMenuHelper from './FiltersMenuHelper';
 import SpinnerSection from './SpinnerSection';
 import DataTable from './DataTable';
 
 import './App.css'
 // BACKUP COPY FOR OFFLINE DEVELOPMENT USE
-import grantsCsv from './grants_db.csv'
+// import grantsCsv from './grants_db.csv'
 
 class App extends Component {
   constructor() {
     super();
     this.allData = [];
-    this.filtersMenuData = [];
     this.state = {
       data: [],
       filters: {},
@@ -25,9 +24,9 @@ class App extends Component {
     // PRODUCTION PATH (CORS issue in dev)
     // const grantsDbUrl = 'https://www.openphilanthropy.org/giving/grants/spreadsheet';
     // PROXY PATH FOR DEVLEOPMENT
-    // const grantsDbUrl = '/giving/grants/spreadsheet';
+    const grantsDbUrl = '/giving/grants/spreadsheet';
     // BACKUP COPY FOR OFFLINE DEVELOPMENT USE
-    const grantsDbUrl = grantsCsv;
+    // const grantsDbUrl = grantsCsv;
 
     d3.csv(grantsDbUrl).then(dirtyData => {
       const allData = dirtyData.map((datum => {
@@ -36,7 +35,7 @@ class App extends Component {
         return datum;
       }));
       this.allData = allData;
-      this.filtersMenuData = new FiltersMenuData(allData).data;
+      this.filtersMenuConfig = new FiltersMenuHelper(allData).componentConfig;
       this.setState({ data: allData });
     });
   }
@@ -67,12 +66,12 @@ class App extends Component {
 
   executeFilters = () => {
     const filteredData = this.allData.filter(datum => {
-      const chosenYear = this.state.filters['Year'];
-      const chosenOrg = this.state.filters['Organization'];
-      const chosenArea = this.state.filters['Focus Area'];
-      const yearCondition = chosenYear ? chosenYear === this.yearFrom(datum) : true;
-      const orgCondition = chosenOrg ? chosenOrg === datum['Organization Name'] : true;
-      const areaCondition = chosenArea ? chosenArea === datum['Focus Area'] : true;
+      const chosenYears = this.state.filters['Year'];
+      const chosenOrgs = this.state.filters['Organization'];
+      const chosenAreas = this.state.filters['Focus Area'];
+      const yearCondition = chosenYears ? chosenYears.includes(this.yearFrom(datum)) : true;
+      const orgCondition = chosenOrgs ? chosenOrgs.includes(datum['Organization Name']) : true;
+      const areaCondition = chosenAreas ? chosenAreas.includes(datum['Focus Area']) : true;
       const searchCondition = this.state.filters.search ? this.checkSearchMatch(datum) : true;
       return yearCondition && orgCondition && areaCondition && searchCondition;
     });
@@ -101,7 +100,7 @@ class App extends Component {
             <h3>Grants total: {this.grantsTotal()}</h3>
             <FiltersPanel
               allData={this.allData}
-              filtersMenuData={this.filtersMenuData}
+              filtersMenuConfig={this.filtersMenuConfig}
               applyFilters={this.applyFilters}
             />
             {this.allData.length ? <DataTable data={this.state.data} /> : <SpinnerSection />}
