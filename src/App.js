@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3-fetch';
 
+import ChartArea from './ChartArea';
 import FiltersPanel from './FiltersPanel';
 import FiltersMenuHelper from './FiltersMenuHelper';
 import SpinnerSection from './SpinnerSection';
@@ -98,8 +99,8 @@ class App extends Component {
           <div>
             <h3>Grants count: {this.state.data.length}</h3>
             <h3>Grants total: {this.grantsTotal()}</h3>
+            {this.state.data.length && <ChartArea data={this.state.data} />}
             <FiltersPanel
-              allData={this.allData}
               filtersMenuConfig={this.filtersMenuConfig}
               applyFilters={this.applyFilters}
             />
