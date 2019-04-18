@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import { Select, Input } from 'semantic-ui-react';
+import Select from 'react-select';
+import { Input } from 'semantic-ui-react';
+import './FiltersPanel.css';
 
 class FiltersPanel extends Component {
-  filterBySelectedOption = (_value, text) => {
-    this.props.applyFilters(text.placeholder, text.value);
+  filterBySelectedOption = (key, selection) => {
+    const selectionValues = selection.length > 0 ? selection.map((obj) => obj.value) : null;
+    this.props.applyFilters(key, selectionValues);
   }
 
   filterBySearch = (event) => {
@@ -12,23 +15,23 @@ class FiltersPanel extends Component {
   }
 
   render() {
+    const selectDropdownConfig = this.props.filtersMenuConfig || [];
+
     return(
       <div>
-        {this.props.filtersMenuData && <Select
-          placeholder='Organization'
-          options={this.props.filtersMenuData.distinctOrgs}
-          onChange={this.filterBySelectedOption}
-        />}
-        {this.props.filtersMenuData && <Select
-          placeholder='Focus Area'
-          options={this.props.filtersMenuData.distinctFocusAreas}
-          onChange={this.filterBySelectedOption}
-        />}
-        {this.props.filtersMenuData && <Select
-          placeholder='Year'
-          options={this.props.filtersMenuData.distinctYears}
-          onChange={this.filterBySelectedOption}
-        />}
+        {
+          selectDropdownConfig.map((configItem) => (
+            <Select
+              className={'FiltersPanel'}
+              key={configItem.name}
+              placeholder={configItem.name}
+              options={configItem.options}
+              isClearable={true}
+              isMulti={true}
+              onChange={(selection, _options) => this.filterBySelectedOption(configItem.name, selection)}
+            />
+          ))
+        }
         <Input
           onChange={this.filterBySearch}
           type='text'
