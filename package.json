@@ -5,10 +5,12 @@
   "dependencies": {
     "d3-fetch": "^1.1.2",
     "material-table": "^1.18.0",
+    "numeral": "^2.0.6",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
     "react-scripts": "2.1.5",
     "react-select": "^2.4.2",
+    "recharts": "^1.5.0",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.85.0"
   },
